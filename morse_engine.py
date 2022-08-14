@@ -16,9 +16,12 @@ FREQUENCY = 700
 def encode(text: str):
     morse_txt = ''
     try:
-        for char in text:
+        for i, char in enumerate(text):
             if char != ' ':
-                morse_txt += ALPHABET_DATA[char] + ' '
+                if i > 0:
+                    if text[i - 1] != ' ':
+                        morse_txt += ' '
+                morse_txt += ALPHABET_DATA[char]
             else:
                 morse_txt += '/'
         return morse_txt
@@ -28,15 +31,17 @@ def encode(text: str):
 
 
 def read_aloud(morse_txt: str):
+    char_before = ''
     for char in morse_txt:
         match char:
             case '.':
+                if char_before not in ('/', ' '):
+                    time.sleep(ELEMENT_SPACE_LENGTH)
                 winsound.Beep(FREQUENCY, int(S_DOT_LENGTH * 1000))
             case '-':
                 winsound.Beep(FREQUENCY, int(S_DASH_LENGTH * 1000))
             case ' ':
-                time.sleep(LETTER_SPACE_LENGTH - 2 * ELEMENT_SPACE_LENGTH)  # -2 to count sleeper before ad after
+                time.sleep(LETTER_SPACE_LENGTH)  # -2 to count sleeper before ad after
             case '/':
-                time.sleep(WORDS_SPACE_LENGTH - 2 * ELEMENT_SPACE_LENGTH)
-        time.sleep(ELEMENT_SPACE_LENGTH)
-
+                time.sleep(WORDS_SPACE_LENGTH)
+        char_before = char
